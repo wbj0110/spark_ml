@@ -5,7 +5,6 @@ import java.io.File
 /**
   * io工具类
   *
-  * Created by yhao on 2017/3/9.
   */
 object IOUtils {
 

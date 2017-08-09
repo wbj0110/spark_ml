@@ -9,7 +9,6 @@ import utils.Evaluations
 /**
   * 基于逻辑回归模型的多分类测试
   *
-  * Created by yhao on 2017/3/8.
   */
 object LRClassPredictDemo extends Serializable {
   def main(args: Array[String]): Unit = {

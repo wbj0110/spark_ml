@@ -7,7 +7,6 @@ import scala.collection.mutable
 /**
   * 分类训练/测试使用参数
   *
-  * Created by yhao on 2017/3/7.
   */
 class ClassParam extends Serializable {
   val kvMap: mutable.LinkedHashMap[String, String] = Conf.loadConf("src/main/resources/classification.properties")

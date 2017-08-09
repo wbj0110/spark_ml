@@ -7,7 +7,6 @@ import scala.collection.mutable
 /**
   * 预处理过程使用参数
   *
-  * Created by yhao on 2017/3/8.
   */
 class PreprocessParam extends Serializable  {
   val kvMap: mutable.LinkedHashMap[String, String] = Conf.loadConf("src/main/resources/preprocess.properties")

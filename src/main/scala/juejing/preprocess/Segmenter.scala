@@ -12,7 +12,6 @@ import scala.collection.JavaConversions._
 /**
   * 基于HanLP的分词
   *
-  * Created by yhao on 2017/2/17.
   */
 class Segmenter(val uid: String) extends Serializable {
   //英文字符正则

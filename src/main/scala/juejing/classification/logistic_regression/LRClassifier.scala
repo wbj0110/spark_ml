@@ -11,7 +11,6 @@ import utils.IOUtils
 /**
   * 逻辑回归多分类
   *
-  * Created by yhao on 2017/3/7.
   */
 class LRClassifier extends Serializable {
 

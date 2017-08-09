@@ -6,7 +6,6 @@ import org.apache.spark.rdd.RDD
 /**
   * 结果评估
   *
-  * Created by yhao on 2017/3/9.
   */
 object Evaluations extends Serializable {
 

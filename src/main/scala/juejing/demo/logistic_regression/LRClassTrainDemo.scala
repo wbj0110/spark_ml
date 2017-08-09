@@ -8,7 +8,6 @@ import preprocess.Preprocessor
 /**
   * 基于逻辑回归的多分类模型训练
   *
-  * Created by yhao on 2017/2/11.
   */
 object LRClassTrainDemo extends Serializable {
 
