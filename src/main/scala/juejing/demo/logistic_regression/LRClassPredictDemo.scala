@@ -32,7 +32,9 @@ object LRClassPredictDemo extends Serializable {
     val predictions = lrClassifier.predict(predictDF, indexModel)
 
     //=== 模型评估
-    val resultRDD = predictions.select("prediction", "indexedLabel").rdd.map { case Row(prediction: Double, label: Double) => (prediction, label) }
+    val resultRDD = predictions.select("prediction", "indexedLabel").rdd.map{
+      case Row(prediction: Double, label: Double) => (prediction, label)
+    }
     val (precision, recall, f1) = Evaluations.multiClassEvaluate(resultRDD)
     println("\n\n========= 评估结果 ==========")
     println(s"\n加权准确率：$precision")

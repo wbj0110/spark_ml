@@ -10,7 +10,6 @@ target/
 .settings
 .classpath
 spark_ml.iml
-spark_ml/target
-spark_ml/*.iml
-spark_ml/*.class
-spark_ml/hanlp/data/*
+target/
+hanlp/data/*
+
