@@ -9,7 +9,6 @@ import utils.Evaluations
 /**
   * 基于决策树模型的多分类预测
   *
-  * Created by yhao on 2017/3/9.
   */
 object DTClassPredictDemo extends Serializable {
   def main(args: Array[String]): Unit = {

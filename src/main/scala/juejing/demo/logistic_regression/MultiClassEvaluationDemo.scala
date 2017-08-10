@@ -8,7 +8,6 @@ import utils.Evaluations
 /**
   * 多分类模型评估
   *
-  * Created by yhao on 2017/3/9.
   */
 object MultiClassEvaluationDemo {
   def main(args: Array[String]): Unit = {

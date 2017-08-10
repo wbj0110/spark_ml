@@ -8,7 +8,6 @@ import preprocess.Preprocessor
 /**
   * 基于决策树的多分类模型训练
   *
-  * Created by yhao on 2017/3/9.
   */
 object DTClassTrainDemo extends Serializable {
   def main(args: Array[String]): Unit = {

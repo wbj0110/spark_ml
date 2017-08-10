@@ -11,5 +11,6 @@ target/
 .classpath
 spark_ml.iml
 target/
+models/
 hanlp/data/*
 
