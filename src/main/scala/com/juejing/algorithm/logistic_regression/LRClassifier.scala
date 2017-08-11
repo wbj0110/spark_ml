@@ -2,7 +2,7 @@ package com.juejing.algorithm.logistic_regression
 
 import java.io.File
 
-import com.juejing.params.ClassParam
+import com.juejing.conf.{Conf, Constant}
 import com.juejing.utils.IOUtils
 import org.apache.spark.ml.classification.{LogisticRegression, LogisticRegressionModel}
 import org.apache.spark.ml.feature.{IndexToString, StringIndexerModel}
@@ -12,7 +12,9 @@ import org.apache.spark.sql.DataFrame
   * 逻辑回归多分类
   *
   */
-class LRClassifier extends Serializable {
+class LRClassifier(conf: Conf) extends Serializable {
+
+  val _constant = Constant(conf)
 
   /**
     * LR模型训练处理过程, 包括: "模型训练"
@@ -21,20 +23,19 @@ class LRClassifier extends Serializable {
     * @return (向量模型, LR模型)
     */
   def train(data: DataFrame): LogisticRegressionModel = {
-    val params = new ClassParam
 
     //=== LR分类模型训练
     data.persist()
     val lrModel = new LogisticRegression()
-      .setMaxIter(params.maxIteration)
-      .setRegParam(params.regParam)
-      .setElasticNetParam(params.elasticNetParam)
-      .setTol(params.converTol)
+      .setMaxIter(_constant.maxIteration)
+      .setRegParam(_constant.regParam)
+      .setElasticNetParam(_constant.elasticNetParam)
+      .setTol(_constant.converTol)
       .setLabelCol("indexedLabel")
       .setFeaturesCol("features")
       .fit(data)
     data.unpersist()
-    this.saveModel(lrModel, params)
+    this.saveModel(lrModel)
 
     lrModel
   }
@@ -47,8 +48,7 @@ class LRClassifier extends Serializable {
     * @return 预测DataFrame, 增加字段:"rawPrediction", "probability", "prediction", "predictedLabel"
     */
   def predict(data: DataFrame, indexModel: StringIndexerModel): DataFrame = {
-    val params = new ClassParam
-    val lrModel = this.loadModel(params)
+    val lrModel = this.loadModel()
 
     //=== LR预测
     val predictions = lrModel.transform(data)
@@ -68,10 +68,9 @@ class LRClassifier extends Serializable {
     * 保存模型
     *
     * @param lrModel  LR模型
-    * @param params 配置参数
     */
-  def saveModel(lrModel: LogisticRegressionModel, params: ClassParam): Unit = {
-    val filePath = params.modelLRPath
+  def saveModel(lrModel: LogisticRegressionModel): Unit = {
+    val filePath = _constant.modelLRPath
     val file = new File(filePath)
     if (file.exists()) {
       println("LR模型已存在，新模型将覆盖原有模型...")
@@ -86,11 +85,10 @@ class LRClassifier extends Serializable {
   /**
     * 加载模型
     *
-    * @param params 配置参数
     * @return LR模型
     */
-  def loadModel(params: ClassParam): LogisticRegressionModel = {
-    val filePath = params.modelLRPath
+  def loadModel(): LogisticRegressionModel = {
+    val filePath = _constant.modelLRPath
     val file = new File(filePath)
     if (!file.exists()) {
       println("LR模型不存在，即将退出！")

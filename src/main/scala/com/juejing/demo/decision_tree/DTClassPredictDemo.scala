@@ -30,7 +30,7 @@ object DTClassPredictDemo extends Serializable {
     val (predictDF, indexModel, _) = preprocessor.forPredict(filePath, spark)
 
     //=== 模型预测
-    val dtClassifier = new DTClassifier
+    val dtClassifier = new DTClassifier(conf)
     val predictions = dtClassifier.predict(predictDF, indexModel)
 
     //=== 模型评估

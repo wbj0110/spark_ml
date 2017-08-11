@@ -29,7 +29,7 @@ object DTClassTrainDemo extends Serializable {
     val trainDF = preprocessor.forPredict(filePath, spark)._1
 
     //=== 模型训练
-    val dtClassifier = new DTClassifier
+    val dtClassifier = new DTClassifier(conf)
     dtClassifier.train(trainDF)
 
     spark.stop()

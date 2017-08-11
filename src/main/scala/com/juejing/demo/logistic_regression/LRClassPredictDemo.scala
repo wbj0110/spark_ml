@@ -32,7 +32,7 @@ object LRClassPredictDemo extends Serializable {
     val (predictDF, indexModel, _) = preprocessor.forPredict(filePath, spark)
 
     //=== 模型预测
-    val lrClassifier = new LRClassifier
+    val lrClassifier = new LRClassifier(conf)
     val predictions = lrClassifier.predict(predictDF, indexModel)
 
     //=== 模型评估

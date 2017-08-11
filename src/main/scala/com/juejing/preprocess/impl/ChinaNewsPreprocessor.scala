@@ -3,7 +3,6 @@ package com.juejing.preprocess.impl
 import java.io.File
 
 import com.juejing.conf.{Conf, Constant}
-import com.juejing.params.PreprocessParam
 import com.juejing.preprocess.{Preprocessor, Segmenter}
 import com.juejing.utils.IOUtils
 import org.apache.spark.ml.feature._
@@ -38,10 +37,9 @@ class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
     * @return (预处理后的数据, 索引模型, 向量模型), 数据包括字段: "label", "indexedLabel", "title", "time", "content", "tokens", "removed", "features"
     */
   override def forPredict(filePath: String, spark: SparkSession): (DataFrame, StringIndexerModel, CountVectorizerModel) = {
-    val params = new PreprocessParam
 
     val cleanDF = this.clean(filePath, spark)
-    val (indexModel, vecModel) = this.loadModel(params)
+    val (indexModel, vecModel) = this.loadModel()
     val indexDF = indexModel.transform(cleanDF)
     val segDF = this.segment(indexDF)
     val predictDF = vecModel.transform(segDF)
@@ -194,12 +192,11 @@ class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
   /**
     * 加载模型
     *
-    * @param params 配置参数
     * @return LR模型
     */
-  def loadModel(params: PreprocessParam): (StringIndexerModel, CountVectorizerModel) = {
-    val indexModelPath = params.indexModelPath
-    val vecModelPath = params.vecModelPath
+  def loadModel(): (StringIndexerModel, CountVectorizerModel) = {
+    val indexModelPath = _constant.indexModelPath
+    val vecModelPath = _constant.vecModelPath
 
     val indexModelFile = new File(indexModelPath)
     val vecModelFile = new File(vecModelPath)

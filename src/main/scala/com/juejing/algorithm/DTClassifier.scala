@@ -2,7 +2,7 @@ package com.juejing.algorithm
 
 import java.io.File
 
-import com.juejing.params.ClassParam
+import com.juejing.conf.{Conf, Constant}
 import com.juejing.utils.IOUtils
 import org.apache.spark.ml.classification.{DecisionTreeClassificationModel, DecisionTreeClassifier}
 import org.apache.spark.ml.feature.{IndexToString, StringIndexerModel}
@@ -11,9 +11,10 @@ import org.apache.spark.sql.DataFrame
 /**
   * 决策树多分类
   *
-  * Created by yhao on 2017/3/9.
   */
-class DTClassifier extends Serializable {
+class DTClassifier(conf: Conf) extends Serializable {
+  val _constant = Constant(conf)
+
   /**
     * 决策树模型训练处理过程, 包括: "模型训练"
     *
@@ -21,18 +22,17 @@ class DTClassifier extends Serializable {
     * @return (向量模型, 决策树模型)
     */
   def train(data: DataFrame): DecisionTreeClassificationModel = {
-    val params = new ClassParam
 
     //=== LR分类模型训练
     data.persist()
     val dtModel = new DecisionTreeClassifier()
-      .setMinInfoGain(params.minInfoGain)
-      .setMaxDepth(params.maxDepth)
+      .setMinInfoGain(_constant.minInfoGain)
+      .setMaxDepth(_constant.maxDepth)
       .setLabelCol("indexedLabel")
       .setFeaturesCol("features")
       .fit(data)
     data.unpersist()
-    this.saveModel(dtModel, params)
+    this.saveModel(dtModel)
 
     dtModel
   }
@@ -46,8 +46,7 @@ class DTClassifier extends Serializable {
     * @return 预测DataFrame, 增加字段:"rawPrediction", "probability", "prediction", "predictedLabel"
     */
   def predict(data: DataFrame, indexModel: StringIndexerModel): DataFrame = {
-    val params = new ClassParam
-    val dtModel = this.loadModel(params)
+    val dtModel = this.loadModel()
 
     //=== DT预测
     val predictions = dtModel.transform(data)
@@ -67,10 +66,9 @@ class DTClassifier extends Serializable {
     * 保存模型
     *
     * @param dtModel  决策树模型
-    * @param params 配置参数
     */
-  def saveModel(dtModel: DecisionTreeClassificationModel, params: ClassParam): Unit = {
-    val filePath = params.modelDTPath
+  def saveModel(dtModel: DecisionTreeClassificationModel): Unit = {
+    val filePath = _constant.modelDTPath
     val file = new File(filePath)
     if (file.exists()) {
       println("决策树模型已存在，新模型将覆盖原有模型...")
@@ -85,11 +83,10 @@ class DTClassifier extends Serializable {
   /**
     * 加载模型
     *
-    * @param params 配置参数
     * @return 决策树模型
     */
-  def loadModel(params: ClassParam): DecisionTreeClassificationModel = {
-    val filePath = params.modelDTPath
+  def loadModel(): DecisionTreeClassificationModel = {
+    val filePath = _constant.modelDTPath
     val file = new File(filePath)
     if (!file.exists()) {
       println("决策树模型不存在，即将退出！")

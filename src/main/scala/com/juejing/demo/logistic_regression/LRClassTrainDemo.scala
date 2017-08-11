@@ -30,7 +30,7 @@ object LRClassTrainDemo extends Serializable {
     val trainDF = preprocessor.forTrain(filePath, spark)._1
 
     //=== 模型训练
-    val lrClassifier = new LRClassifier
+    val lrClassifier = new LRClassifier(conf)
     lrClassifier.train(trainDF)
 
     spark.stop()

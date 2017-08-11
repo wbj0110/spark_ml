@@ -31,11 +31,11 @@ object MultiClassEvaluationDemo {
     val (predictDF, indexModel, _) = preprocessor.forPredict(filePath, spark)
 
     //=== DT模型预测
-    val dtClassifier = new DTClassifier
+    val dtClassifier = new DTClassifier(conf)
     val dtPredictions = dtClassifier.predict(predictDF, indexModel)
 
     //=== LR模型预测
-    val lrClassifier = new LRClassifier
+    val lrClassifier = new LRClassifier(conf)
     val lrPredictions = lrClassifier.predict(predictDF, indexModel)
 
     val predictions = Seq(dtPredictions, lrPredictions)
