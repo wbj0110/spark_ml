@@ -1,6 +1,6 @@
 package com.juejing.demo.logistic_regression
 
-import com.juejing.algorithm.DTClassifier
+import com.juejing.algorithm.decision_tree.DTClassifier
 import com.juejing.algorithm.logistic_regression.LRClassifier
 import com.juejing.conf.Conf
 import com.juejing.preprocess.Preprocessor

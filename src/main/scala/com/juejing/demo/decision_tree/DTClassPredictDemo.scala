@@ -1,6 +1,6 @@
 package com.juejing.demo.decision_tree
 
-import com.juejing.algorithm.DTClassifier
+import com.juejing.algorithm.decision_tree.DTClassifier
 import com.juejing.conf.Conf
 import com.juejing.preprocess.Preprocessor
 import com.juejing.utils.Evaluations

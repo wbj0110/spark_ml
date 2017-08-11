@@ -1,4 +1,4 @@
-package com.juejing.algorithm
+package com.juejing.algorithm.decision_tree
 
 import java.io.File
 
