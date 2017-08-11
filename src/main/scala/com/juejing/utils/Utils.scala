@@ -19,7 +19,7 @@ object Utils extends Logging{
   def loadDefaultProperties(conf: Conf, filePath: String = null): String = {
     val path = Option(filePath).getOrElse(getDefaultPropertiesFile())
     if (path == null) {
-      Option(getClass.getClassLoader.getResourceAsStream("defaults.conf")) match {
+      Option(getClass.getClassLoader.getResourceAsStream("defaults.properties")) match {
         case Some(input) =>
           val properties = new Properties()
           properties.load(input)
@@ -32,7 +32,7 @@ object Utils extends Logging{
               sys.props.getOrElseUpdate(k, v)
           }
         case None =>
-          logError("cant't found defaults.conf")
+          logError("cant't found defaults.properties")
       }
     } else {
       Option(path).foreach { confFile =>
@@ -72,16 +72,16 @@ object Utils extends Logging{
   def getDefaultPropertiesFile(env: Map[String, String] = sys.env): String = {
     var filePath = env.get("CONF_DIR")
       .orElse(env.get("SPARK_ML_HOME").map { t => s"$t${File.separator}conf" })
-      .map { t => new File(s"$t${File.separator}defaults.conf") }
+      .map { t => new File(s"$t${File.separator}defaults.properties") }
       .filter(_.isFile)
       .map(_.getAbsolutePath)
       .orNull
     /*if(filePath==null){
-      Option(getClass.getClassLoader.getResource("defaults.conf")) match {
+      Option(getClass.getClassLoader.getResource("defaults.properties")) match {
         case Some(url) =>
           filePath = url.getPath
         case None =>
-          logError("cant't found defaults.conf")
+          logError("cant't found defaults.properties")
       }
     }*/
     if (filePath == null) {
@@ -90,7 +90,7 @@ object Utils extends Logging{
         if (filePath != null) return filePath
       } catch {
         case e: Exception =>
-          logError("can't found defaults.conf from sys")
+          logError("can't found defaults.properties from sys")
       }
     }
     filePath

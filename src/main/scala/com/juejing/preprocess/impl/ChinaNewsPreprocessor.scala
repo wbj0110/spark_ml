@@ -2,7 +2,7 @@ package com.juejing.preprocess.impl
 
 import java.io.File
 
-import com.juejing.conf.Conf
+import com.juejing.conf.{Conf, Constant}
 import com.juejing.params.PreprocessParam
 import com.juejing.preprocess.{Preprocessor, Segmenter}
 import com.juejing.utils.IOUtils
@@ -13,18 +13,18 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
 
+  val _constant =Constant(conf)
 
 
   override def forTrain(filePath: String, spark: SparkSession): (DataFrame, StringIndexerModel, CountVectorizerModel) = {
-    val params = new PreprocessParam
 
     val cleanDF = this.clean(filePath, spark)   //清洗数据
     val indexModel = this.indexrize(cleanDF)
     val indexDF = indexModel.transform(cleanDF)   //标签索引化
-    val segDF = this.segment(indexDF, params)   //分词
-    val vecModel = this.vectorize(segDF, params)
+    val segDF = this.segment(indexDF)   //分词
+    val vecModel = this.vectorize(segDF)
     val trainDF = vecModel.transform(segDF)   //向量化
-    this.saveModel(indexModel, vecModel, params)    //保存模型
+    this.saveModel(indexModel, vecModel)    //保存模型
 
     (trainDF, indexModel, vecModel)
   }
@@ -43,7 +43,7 @@ class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
     val cleanDF = this.clean(filePath, spark)
     val (indexModel, vecModel) = this.loadModel(params)
     val indexDF = indexModel.transform(cleanDF)
-    val segDF = this.segment(indexDF, params)
+    val segDF = this.segment(indexDF)
     val predictDF = vecModel.transform(segDF)
 
     (predictDF, indexModel, vecModel)
@@ -105,27 +105,26 @@ class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
     * 分词过程，包括"分词", "去除停用词"
     *
     * @param data   输入数据
-    * @param params 配置参数
     * @return 预处理后的DataFrame, 增加字段: "tokens", "removed"
     */
-  def segment(data: DataFrame, params: PreprocessParam): DataFrame = {
+  def segment(data: DataFrame): DataFrame = {
     val spark = data.sparkSession
 
     //=== 分词
     val segmenter = new Segmenter()
-      .isDelEn(params.delEn)
-      .isDelNum(params.delNum)
-      .setSegmentType(params.segmentType)
-      .addNature(params.addNature)
-      .setMinTermLen(params.minTermLen)
-      .setMinTermNum(params.minTermNum)
+      .isDelEn(_constant.delEn)
+      .isDelNum(_constant.delNum)
+      .setSegmentType(_constant.segmentType)
+      .addNature(_constant.addNature)
+      .setMinTermLen(_constant.minTermLen)
+      .setMinTermNum(_constant.minTermNum)
       .setInputCol("content")
       .setOutputCol("tokens")
     val segDF = segmenter.transform(data)
 
 
     //=== 去除停用词
-    val stopwordArray = spark.sparkContext.textFile(params.stopwordFilePath).collect()
+    val stopwordArray = spark.sparkContext.textFile(_constant.stopwordFilePath).collect()
     val remover = new StopWordsRemover()
       .setStopWords(stopwordArray)
       .setInputCol(segmenter.getOutputCol)
@@ -140,13 +139,12 @@ class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
     * 向量化过程, 包括词汇表过滤
     *
     * @param data   输入数据
-    * @param params 配置参数
     * @return 向量模型
     */
-  def vectorize(data: DataFrame, params: PreprocessParam): CountVectorizerModel = {
+  def vectorize(data: DataFrame): CountVectorizerModel = {
     //=== 向量化
     val vectorizer = new CountVectorizer()
-      .setVocabSize(params.vocabSize)
+      .setVocabSize(_constant.vocabSize)
       .setInputCol("removed")
       .setOutputCol("features")
     val parentVecModel = vectorizer.fit(data)
@@ -170,11 +168,10 @@ class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
     *
     * @param indexModel 标签索引模型
     * @param vecModel 向量模型
-    * @param params   配置参数
     */
-  def saveModel(indexModel: StringIndexerModel, vecModel: CountVectorizerModel, params: PreprocessParam): Unit = {
-    val indexModelPath = params.indexModelPath
-    val vecModelPath = params.vecModelPath
+  def saveModel(indexModel: StringIndexerModel, vecModel: CountVectorizerModel): Unit = {
+    val indexModelPath = _constant.indexModelPath
+    val vecModelPath = _constant.vecModelPath
 
     val indexModelFile = new File(indexModelPath)
     val vecModelFile = new File(vecModelPath)

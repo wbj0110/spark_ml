@@ -14,10 +14,10 @@ class Conf(loadDefaults: Boolean) extends Cloneable with Logging with Serializab
 
   import Conf._
 
-  /** Create a CrawlerConf that loads defaults from system properties and the classpath */
+  /** Create a Conf that loads defaults from system properties and the classpath */
   def this() = this(true)
 
-  //加载默认配置文件，crawler-defaults.conf
+  //加载默认配置文件，defaults.properties
   Utils.loadDefaultProperties(this, null)
 
 
