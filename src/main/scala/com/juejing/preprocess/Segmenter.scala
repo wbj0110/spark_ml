@@ -1,5 +1,6 @@
 package com.juejing.preprocess
 
+import com.hankcs.hanlp.dictionary.CustomDictionary
 import com.hankcs.hanlp.seg.Segment
 import com.hankcs.hanlp.seg.common.Term
 import com.hankcs.hanlp.tokenizer.{IndexTokenizer, NLPTokenizer, SpeedTokenizer, StandardTokenizer}
@@ -23,12 +24,17 @@ class Segmenter(val uid: String) extends Serializable {
 
   private var inputCol: String = ""
   private var outputCol: String = ""
-  private var segmentType: String = "StandardTokenizer"
+ // private var segmentType: String = "StandardTokenizer"
+ private var segmentType: String = "CRFSegment"
   private var addNature: Boolean = false
   private var delNum: Boolean = false
   private var delEn: Boolean = false
   private var minTermLen: Int = 1
   private var minTermNum: Int = 3
+
+  CustomDictionary.add("华泰证券")
+  CustomDictionary.add("行情数据")
+  CustomDictionary.add("行情")
 
   def setInputCol(value: String): this.type = {
     this.inputCol = value

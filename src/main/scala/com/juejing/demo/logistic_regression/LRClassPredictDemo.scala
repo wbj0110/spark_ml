@@ -52,7 +52,7 @@ object LRClassPredictDemo extends Serializable {
     println(s"加权召回率：$recall")
     println(s"F1值：$f1")
 
-    predictions.select("label", "predictedLabel", "content").show(100, truncate = false)
+    predictions.select("label", "predictedLabel", "content").show(10000, truncate = false)
 
     spark.stop()
   }
