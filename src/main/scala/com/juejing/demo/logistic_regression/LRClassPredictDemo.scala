@@ -15,7 +15,8 @@ import org.apache.spark.sql.{Row, SparkSession}
 object LRClassPredictDemo extends Serializable {
   val conf = new Conf()
   //val filePath = "data/classnews/predict"
-  val filePath = "data/qa/predict"
+  //val filePath = "data/qa/predict"
+  val filePath = "data/qa/test_predict"
 
   //val chinaNewsClean = new ChinaNewsClean(conf,filePath)
   val qaIntentClean = new QAIntentClean(conf,filePath)
