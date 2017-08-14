@@ -4,6 +4,7 @@ import com.juejing.algorithm.decision_tree.DTClassifier
 import com.juejing.algorithm.logistic_regression.LRClassifier
 import com.juejing.conf.Conf
 import com.juejing.preprocess.Preprocessor
+import com.juejing.preprocess.data_clean.impl.ChinaNewsClean
 import com.juejing.utils.Evaluations
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.sql.{Row, SparkSession}
@@ -14,6 +15,10 @@ import org.apache.spark.sql.{Row, SparkSession}
   */
 object MultiClassEvaluationDemo {
   val conf = new Conf()
+  val filePath = "data/classnews/predict"
+  val chinaNewsClean = new ChinaNewsClean(conf,filePath)
+
+
   def main(args: Array[String]): Unit = {
     Logger.getLogger("org").setLevel(Level.WARN)
     //    HanLP.Config.enableDebug()
@@ -24,11 +29,11 @@ object MultiClassEvaluationDemo {
       .appName("Multi_Class_Evaluation_Demo")
       .getOrCreate()
 
-    val filePath = "data/classnews/predict"
+
 
     //=== 预处理(清洗、分词、向量化)
-    val preprocessor = Preprocessor(conf)
-    val (predictDF, indexModel, _) = preprocessor.forPredict(filePath, spark)
+    val preprocessor = Preprocessor(conf,chinaNewsClean)
+    val (predictDF, indexModel, _) = preprocessor.forPredict(spark)
 
     //=== DT模型预测
     val dtClassifier = new DTClassifier(conf)

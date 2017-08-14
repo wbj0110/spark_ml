@@ -3,6 +3,7 @@ package com.juejing.preprocess.impl
 import java.io.File
 
 import com.juejing.conf.{Conf, Constant}
+import com.juejing.preprocess.data_clean.DataClean
 import com.juejing.preprocess.{Preprocessor, Segmenter}
 import com.juejing.utils.IOUtils
 import org.apache.spark.ml.feature._
@@ -10,14 +11,14 @@ import org.apache.spark.ml.util.Identifiable
 import org.apache.spark.sql.{DataFrame, SparkSession}
 
 
-class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
+class ChinaNewsPreprocessor(conf: Conf,dataClean: DataClean) extends Preprocessor with Serializable {
 
   val _constant =Constant(conf)
 
 
   override def forTrain(filePath: String, spark: SparkSession): (DataFrame, StringIndexerModel, CountVectorizerModel) = {
 
-    val cleanDF = this.clean(filePath, spark)   //清洗数据
+    val cleanDF = dataClean.clean(spark)   //清洗数据
     val indexModel = this.indexrize(cleanDF)
     val indexDF = indexModel.transform(cleanDF)   //标签索引化
     val segDF = this.segment(indexDF)   //分词
@@ -32,13 +33,12 @@ class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
   /**
     * 用于训练的预处理
     *
-    * @param filePath 数据路径
     * @param spark  SparkSession
     * @return (预处理后的数据, 索引模型, 向量模型), 数据包括字段: "label", "indexedLabel", "title", "time", "content", "tokens", "removed", "features"
     */
-  override def forPredict(filePath: String, spark: SparkSession): (DataFrame, StringIndexerModel, CountVectorizerModel) = {
+  override def forPredict(spark: SparkSession): (DataFrame, StringIndexerModel, CountVectorizerModel) = {
 
-    val cleanDF = this.clean(filePath, spark)
+    val cleanDF = dataClean.clean( spark)
     val (indexModel, vecModel) = this.loadModel()
     val indexDF = indexModel.transform(cleanDF)
     val segDF = this.segment(indexDF)
@@ -55,7 +55,7 @@ class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
     * @param spark    SparkSession
     * @return 清洗后的数据, 包含字段: "label", "title", "time", "content"
     */
-  def clean(filePath: String, spark: SparkSession): DataFrame = {
+  /*def clean(filePath: String, spark: SparkSession): DataFrame = {
     import spark.implicits._
     val textDF = spark.sparkContext.textFile(filePath).flatMap { line =>
       val fields = line.split("\u00EF")
@@ -80,7 +80,7 @@ class ChinaNewsPreprocessor(conf: Conf) extends Preprocessor with Serializable {
     }.toDF("label", "title", "time", "content")
 
     textDF
-  }
+  }*/
 
 
   /**
